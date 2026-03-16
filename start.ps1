@@ -24,6 +24,7 @@ param(
     [switch]$Production,
     [switch]$BackendOnly,
     [switch]$Test,
+    [switch]$Status,
     [int]$Port = 0
 )
 
@@ -35,14 +36,26 @@ $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 # ============================================================================
 $ProjectName     = "{{PROJECT_NAME}}"          # e.g. "Nightingale Agents", "Papyrus"
 $BackendType     = "python"                     # "python" | "node"
-$BackendDir      = "backend"                    # Relative to repo root
-$FrontendDir     = "ui"                         # Relative to repo root, or "" if none
+$BackendDir      = "backend"                    # Relative to repo root ("." for monolith)
+$BackendCmd      = "uvicorn app.main:app"       # Python: uvicorn entrypoint. Node: ignored (uses npm)
+$ReloadDirs      = @("app", "modules")          # Python: --reload-dir targets (empty = watch all)
+$FrontendDir     = "ui"                         # Relative to repo root, or "" if none/monolith
 $DefaultPort     = 8000                         # Backend port
 $UIPort          = 5173                         # Frontend port
 $HealthPath      = "/health"                    # Health check endpoint path
+$EnvFileName     = ".env"                       # Env file name (relative to BackendDir)
 # ============================================================================
 
-if ($Port -eq 0) { $Port = $DefaultPort }
+if ($Port -eq 0) {
+    # Try reading PORT from .env
+    $envPath = Join-Path $ScriptDir $BackendDir $EnvFileName
+    if ($BackendDir -eq ".") { $envPath = Join-Path $ScriptDir $EnvFileName }
+    if (Test-Path $envPath) {
+        $portLine = Get-Content $envPath | Where-Object { $_ -match "^PORT=" }
+        if ($portLine) { $Port = [int]($portLine -replace "^PORT=","") }
+    }
+    if ($Port -eq 0) { $Port = $DefaultPort }
+}
 
 # ── Find Python ───────────────────────────────────────
 function Find-Python {
@@ -74,11 +87,40 @@ if ($Stop) {
     return
 }
 
+# ── Status command ────────────────────────────────────
+if ($Status) {
+    Write-Host "[start.ps1] Checking $ProjectName status..." -ForegroundColor Cyan
+    $beUp = $null -ne (Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue)
+    $feUp = $false
+    if ($FrontendDir) {
+        $feUp = $null -ne (Get-NetTCPConnection -LocalPort $UIPort -State Listen -ErrorAction SilentlyContinue)
+    }
+    Write-Host "  Backend  (port $Port):   $(if ($beUp) { 'UP' } else { 'DOWN' })" -ForegroundColor $(if ($beUp) { 'Green' } else { 'Red' })
+    if ($FrontendDir) {
+        Write-Host "  Frontend (port $UIPort): $(if ($feUp) { 'UP' } else { 'DOWN' })" -ForegroundColor $(if ($feUp) { 'Green' } else { 'Red' })
+    }
+    if ($beUp) {
+        try {
+            $h = Invoke-RestMethod "http://localhost:$Port$HealthPath" -TimeoutSec 3
+            Write-Host "  Health:  $($h.status) | Build: $($h.build_stamp)" -ForegroundColor Green
+        } catch {
+            Write-Host "  Health:  endpoint unreachable" -ForegroundColor Yellow
+        }
+    }
+    return
+}
+
 # ── Resolve runtime ───────────────────────────────────
 $py = $null
 if ($BackendType -eq "python") {
     $py = Find-Python
     Write-Host "[start.ps1] Python: $py" -ForegroundColor Cyan
+}
+
+# ── Validate .env ─────────────────────────────────────
+$envCheck = if ($BackendDir -eq ".") { Join-Path $ScriptDir $EnvFileName } else { Join-Path $ScriptDir $BackendDir $EnvFileName }
+if (-not (Test-Path $envCheck)) {
+    Write-Host "[start.ps1] WARNING: $EnvFileName not found at $envCheck" -ForegroundColor Yellow
 }
 
 # ── Test command ──────────────────────────────────────
@@ -166,7 +208,7 @@ Write-Host "   Press Ctrl+C to stop" -ForegroundColor DarkCyan
 Write-Host "  ============================================" -ForegroundColor DarkCyan
 Write-Host ""
 
-$beDir = Join-Path $ScriptDir $BackendDir
+$beDir = if ($BackendDir -eq ".") { $ScriptDir } else { Join-Path $ScriptDir $BackendDir }
 Push-Location $beDir
 
 if ($BackendType -eq "python") {
@@ -175,9 +217,13 @@ if ($BackendType -eq "python") {
     $env:PYTHONDONTWRITEBYTECODE = "1"
     try {
         if ($Production) {
-            & $py -m uvicorn app.main:app --host 0.0.0.0 --port $Port
+            & $py -m $BackendCmd --host 0.0.0.0 --port $Port
         } else {
-            & $py -m uvicorn app.main:app --host 0.0.0.0 --port $Port --reload
+            $reloadArgs = @("--reload")
+            foreach ($rd in $ReloadDirs) {
+                if ($rd) { $reloadArgs += "--reload-dir"; $reloadArgs += $rd }
+            }
+            & $py -m $BackendCmd --host 0.0.0.0 --port $Port @reloadArgs
         }
     } finally {
         Pop-Location

@@ -18,11 +18,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # ============================================================================
 PROJECT_NAME="{{PROJECT_NAME}}"
 BACKEND_TYPE="python"           # "python" | "node"
-BACKEND_DIR="backend"
+BACKEND_DIR="backend"           # "." for monolith
+BACKEND_CMD="uvicorn app.main:app"  # Python entrypoint
+RELOAD_DIRS="app modules"       # Space-separated --reload-dir targets (empty = watch all)
 FRONTEND_DIR="ui"               # "" if no separate frontend
 DEFAULT_PORT=8000
 UI_PORT=5173
 HEALTH_PATH="/health"
+ENV_FILE=".env"
 # ============================================================================
 
 : "${PORT:=$DEFAULT_PORT}"
@@ -46,6 +49,23 @@ trap cleanup EXIT
 # ── Commands ──────────────────────────────────────────
 cmd_stop() { kill_port "$PORT"; [ -n "$FRONTEND_DIR" ] && kill_port "$UI_PORT"; log "Done."; exit 0; }
 
+cmd_status() {
+  local be_up=false fe_up=false
+  lsof -ti :"$PORT" >/dev/null 2>&1 && be_up=true
+  [ -n "$FRONTEND_DIR" ] && lsof -ti :"$UI_PORT" >/dev/null 2>&1 && fe_up=true
+  log "Backend  (port $PORT):   $($be_up && echo 'UP' || echo 'DOWN')"
+  [ -n "$FRONTEND_DIR" ] && log "Frontend (port $UI_PORT): $($fe_up && echo 'UP' || echo 'DOWN')"
+  if $be_up; then
+    local health; health=$(curl -sf "http://localhost:$PORT$HEALTH_PATH" 2>/dev/null)
+    if [ -n "$health" ]; then
+      log "Health: $(echo "$health" | python3 -c "import sys,json; d=json.load(sys.stdin); print(f\"{d.get('status','?')} | build={d.get('build_stamp','?')}\")" 2>/dev/null || echo "$health")"
+    else
+      log "Health: endpoint unreachable"
+    fi
+  fi
+  exit 0
+}
+
 cmd_test() {
   local PY; PY="$(find_python)"
   if [ "$BACKEND_TYPE" = "python" ]; then
@@ -56,11 +76,13 @@ cmd_test() {
 }
 
 cmd_production() {
-  cd "$SCRIPT_DIR/$BACKEND_DIR"
+  local be_dir="$SCRIPT_DIR/$BACKEND_DIR"
+  [ "$BACKEND_DIR" = "." ] && be_dir="$SCRIPT_DIR"
+  cd "$be_dir"
   if [ "$BACKEND_TYPE" = "python" ]; then
     [ -f requirements.txt ] && pip install --no-cache-dir -r requirements.txt
-    log "Starting uvicorn on 0.0.0.0:${PORT} (production)"
-    exec uvicorn app.main:app --host 0.0.0.0 --port "${PORT}"
+    log "Starting $BACKEND_CMD on 0.0.0.0:${PORT} (production)"
+    exec python -m $BACKEND_CMD --host 0.0.0.0 --port "${PORT}"
   else
     npm run build && exec npm run start
   fi
@@ -70,15 +92,22 @@ cmd_dev() {
   local with_ui=false
   [[ "${1:-}" == "--ui" ]] && with_ui=true
 
-  local PY; PY="$(find_python)"
-  log "Python: $PY | Port: $PORT"
+  local PY=""
+  if [ "$BACKEND_TYPE" = "python" ]; then
+    PY="$(find_python)"
+    log "Python: $PY | Port: $PORT"
+  else
+    log "Node | Port: $PORT"
+  fi
 
   # Kill stale, clean caches
   kill_port "$PORT"
   $with_ui && kill_port "$UI_PORT"
+  local be_dir="$SCRIPT_DIR/$BACKEND_DIR"
+  [ "$BACKEND_DIR" = "." ] && be_dir="$SCRIPT_DIR"
   if [ "$BACKEND_TYPE" = "python" ]; then
     export PYTHONDONTWRITEBYTECODE=1
-    find "$SCRIPT_DIR/$BACKEND_DIR" -type d -name __pycache__ -not -path '*/.venv/*' -exec rm -rf {} + 2>/dev/null || true
+    find "$be_dir" -type d -name __pycache__ -not -path '*/.venv/*' -exec rm -rf {} + 2>/dev/null || true
   fi
 
   # Build stamp
@@ -105,9 +134,13 @@ cmd_dev() {
   echo "  ============================================"
   echo ""
 
-  cd "$SCRIPT_DIR/$BACKEND_DIR"
+  cd "$be_dir"
   if [ "$BACKEND_TYPE" = "python" ]; then
-    "$PY" -m uvicorn app.main:app --host 0.0.0.0 --port "${PORT}" --reload
+    local reload_args="--reload"
+    for rd in $RELOAD_DIRS; do
+      [ -n "$rd" ] && reload_args="$reload_args --reload-dir $rd"
+    done
+    "$PY" -m $BACKEND_CMD --host 0.0.0.0 --port "${PORT}" $reload_args
   else
     PORT="$PORT" npm run dev
   fi
@@ -116,6 +149,7 @@ cmd_dev() {
 # ── Main dispatch ─────────────────────────────────────
 case "${1:-production}" in
   stop)       cmd_stop ;;
+  status)     cmd_status ;;
   test)       shift; cmd_test "$@" ;;
   dev)        shift; cmd_dev "$@" ;;
   production|*) cmd_production ;;
