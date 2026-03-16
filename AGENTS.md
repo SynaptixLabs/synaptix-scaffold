@@ -23,7 +23,7 @@ Every message starts with **one** of these:
 
 * `[CPO]`
 * `[CTO]`
-* `[DEV:<module>]` (module conversation; examples: `[DEV:auth]`, `[DEV:payments|BE]`, `[DEV:ui-shell|FE]`)
+* `[DEV:<module>]` (module conversation; examples: `[DEV:auth]`, `[DEV:payments|BE]`, `[DEV:ui-shell|FE]`, `[DEV:devops]`)
 * `[FOUNDER]` (human operator / facilitator)
 * `[DESIGNER]` / `[UX]` (ARIA -- invoke via `@role_ux` or Claude Project with `role_ux.md`)
 * `[REVIEW]` (cross-role review mode; still state which role you’re reviewing as)
@@ -110,6 +110,33 @@ These are **system roles** reused across projects. They are **generic** (not pro
 
 ---
 
+### 2.3.1 DEV:devops (specialized) — Infrastructure & Operations
+
+**Thinks in:** processes, ports, containers, pipelines, health checks, deployment.
+
+**Primary ownership (infra truth):**
+
+* `start.ps1` / `start.sh` — project start scripts
+* `.github/workflows/` — CI/CD pipelines
+* `Dockerfile` / `docker-compose.yml` — container definitions
+* Health check endpoint implementations
+
+**Responsibilities:**
+
+* Maintain start scripts with process management, cache cleanup, build stamps, health checks.
+* Ensure Windows + Linux parity for all scripts.
+* CI/CD pipeline authoring (GitHub Actions → Cloud Build → Cloud Run).
+* Environment configuration (`.env.example`, secrets documentation).
+
+**Non-negotiables:**
+
+* `PYTHONDONTWRITEBYTECODE=1` in all Python start scripts on Windows.
+* Build stamps on every start for traceability.
+* Stale process cleanup before launching.
+* Health endpoints on every deployable.
+
+---
+
 ### 2.4 FOUNDER (Human) — Operator / facilitator / tiebreaker
 
 **This is a human role.** Not an LLM agent.
@@ -183,6 +210,24 @@ If work affects the repo, include:
 
 * Default test data: synthetic/fixtures. No real customer/production data unless explicitly approved and anonymized.
 * TDD preferred.
+
+### 4.4 Start script convention
+
+Every project must have `start.ps1` (Windows) and `start.sh` (Linux/macOS) at repo root.
+
+Required behaviors:
+* Kill stale processes on configured ports before launching.
+* Clean language-specific caches (Python `__pycache__`, Node `.next/cache`).
+* Generate and export `BUILD_STAMP` env var (ISO-like timestamp).
+* Validate `.env` file exists and required vars are set.
+* Print banner with project name, URLs, build stamp, and mode.
+* Support `--stop` / `-Stop` flag to cleanly shut down.
+* Support `--prod` / `-Production` flag for production mode.
+
+Optional:
+* Health check wait loop after server starts.
+* Notification hook on successful startup.
+* DB migration status check (Prisma/Alembic).
 
 ---
 
