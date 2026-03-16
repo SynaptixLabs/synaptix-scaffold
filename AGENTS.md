@@ -157,7 +157,7 @@ These are **system roles** reused across projects. They are **generic** (not pro
 
 ### 2.5 DESIGNER / ARIA (UI/UX Creative Agent)
 
-Invoked via `@role_ux` in Windsurf, or as a Claude Project with `role_ux.md` as system prompt.
+Invoked via `/project:dev-ux` in Claude Code CLI, or as a Claude Project with `.claude/roles/aria_ux.md` as system prompt.
 
 **Owns:** UI kit, design tokens, component specs, SVG/animation systems, Living UI Kits.
 
@@ -167,7 +167,7 @@ Invoked via `@role_ux` in Windsurf, or as a Claude Project with `role_ux.md` as 
 
 **ARIA modes:** Reactive (spec → implement precisely + elevate) | Generative (brief → invent + build).
 Output is always runnable code — never prose descriptions.
-See `.windsurf/rules/role_ux.md` for full instructions.
+See `.claude/roles/aria_ux.md` for full identity prompt, `.claude/commands/dev-ux.md` for CLI activator.
 
 ---
 
