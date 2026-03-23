@@ -72,7 +72,7 @@ $ErrorActionPreference = "Stop"
 if ($ProjectRoot -eq "") {
     $ProjectRoot = (Get-Item $PSScriptRoot).Parent.Parent.FullName
 }
-$kbRoot    = Join-Path $ProjectRoot "docs\KB"
+$kbRoot    = Join-Path $ProjectRoot "project_management\KB"
 $projDocs  = Join-Path $kbRoot "Project docs"
 $extDocs   = Join-Path $kbRoot "External docs"
 $archDir   = Join-Path $kbRoot "Archive"

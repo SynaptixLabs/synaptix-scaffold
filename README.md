@@ -563,13 +563,59 @@ Add to Sprint-0 checklist:
 
 ---
 
+## New in v0.5.0: Agents Project Adoption
+
+This release brings patterns and infrastructure from the production Synaptix AGENTS project (Sprint 11):
+
+### Module Reuse Protocol
+- **`MUST_READ_MODULE_REUSE.md`** — The #1 quality gate. Read before writing ANY code. Prevents duplicate infrastructure.
+
+### Skills System (`.claude/skills/`)
+8 reusable process procedures with checklists and report templates:
+- `design-review-gbu` — Structured GBU review (7 phases)
+- `implement-backend` — Backend dev workflow with TDD
+- `implement-frontend` — Frontend dev with Playwright validation
+- `qa-gate` — QA validation with PASS/FAIL report
+- `release-readiness` — Pre-deploy GO/NO-GO gate
+- `sprint-report-skill` — Sprint status reporting
+- `sprint-team-launch` — Multi-agent team orchestration
+- `sync-state` — Multi-window session state sync
+
+### Session State Management
+- **Reinject hook** (`.claude/hooks/reinject_context.py`) — Auto-restores context after compaction
+- **Session state template** (`.claude/state/`) — Survives compaction and multi-window work
+
+### Project Management
+- **`project_management/KB/`** — Knowledge Base structure with flat-file sync
+- **`project_management/STRATEGIC_BACKLOG.md`** — Long-term roadmap template
+
+### Sprint TODO 3-Checkbox System
+Updated TODO template with clear team ownership:
+```
+| Task | Done + Report (DEV) | Tested + Report (QA) | GBU + Report (CPTO) |
+```
+A task is only COMPLETE when all 3 checkboxes are checked.
+
+### New Commands
+- **`/project:gbu`** — Full 7-phase GBU review with fix-in-place
+- **`/project:dev-cso`** — Chief Security Officer agent (OWASP Top 10)
+- **`/project:design-review`** — Evolved to output to `reviews/` with quality scorecard
+
+### Interactive Guide
+- **`scaffold-guide.html`** — Interactive HTML dashboard with navigation, search, workflow diagrams
+
+### Operations Guide
+- **`.claude/GUIDE.md`** — Complete reference for all commands, skills, and workflows
+
+---
+
 ## Contributing to this template
 
 If you find improvements while using this template:
 1. Make the fix in your project
-2. Backport to `Windsurf-Projects-Template` repo
+2. Backport to `synaptix-scaffold` repo
 3. Commit with message: `fix(template): <what you fixed>`
 
 ---
 
-*Last updated: 2026-02-24* | See [CHANGELOG.md](CHANGELOG.md) for version history
+*Last updated: 2026-03-23* | See [CHANGELOG.md](CHANGELOG.md) for version history

@@ -33,7 +33,7 @@ signal to rethink the approach — not add a drop shadow.
 - **Budō AI (武道):** Disciplined, ink-brush energy, deep blacks, deliberate motion.
 - **Papyrus:** Academic elegance, readable, Visual Pack animation system.
 - **SynaptixLabs brand / ARIA identity:** Space Mono + Syne. Dark mode default.
-- **Nightingale (AGENTS):** Professional, data-dense, clarity over charm.
+- **Synaptix AGENTS:** Professional, data-dense, clarity over charm.
 
 When starting a new product or session, confirm the register before designing.
 

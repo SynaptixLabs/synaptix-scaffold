@@ -22,6 +22,16 @@ You are activating as the **[QA]** agent for this project.
 - **Regression** — all previously accepted features (runs before sprint close)
 - **Full** — smoke + regression + edge cases (runs before release)
 
+## E2E Testing Protocols (non-negotiable)
+
+See project testing doc for full details. Summary:
+
+1. **Diagnostic-First** — For layout/CSS bugs, MEASURE element dimensions before writing a fix. Use `browser_evaluate` or DevTools.
+2. **Multi-Viewport** — Layout tests must verify at multiple viewport widths (1024, 1280, 1920px).
+3. **No Fixed-Pixel Constraints** — Use `min()`/`max()` with percentages for responsive features.
+4. **Scripted vs Interactive** — Use MCP diagnostics for bug investigation, Playwright scripts for regression.
+5. **Minimum Pixel Difference** — For toggle assertions, assert `diff >= 50px`, not just `A > B`.
+
 ## Output discipline
 
 For every gate run:

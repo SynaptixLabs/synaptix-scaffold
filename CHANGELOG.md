@@ -7,6 +7,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-03-23
+
+### Added
+
+#### Module Reuse Protocol
+- **`MUST_READ_MODULE_REUSE.md`**: Root-level module reuse protocol — the #1 quality gate. CHECK BEFORE YOU BUILD. Includes 4 rules, import table template, violation examples, and design review integration.
+
+#### Skills System (`.claude/skills/`)
+- **`design-review-gbu/`**: GBU review skill with SKILL.md, checklist.md, report-template.md
+- **`implement-backend/`**: Backend dev workflow skill with SKILL.md, checklist.md
+- **`implement-frontend/`**: Frontend dev workflow skill with SKILL.md, checklist.md
+- **`qa-gate/`**: QA validation skill with SKILL.md, checklist.md, report-template.md
+- **`release-readiness/`**: Pre-deploy gate skill with SKILL.md, checklist.md, report-template.md
+- **`sprint-report-skill/`**: Sprint status reporting skill with SKILL.md, report-template.md
+- **`sync-state/`**: Multi-window state sync skill with SKILL.md
+
+#### Session State Management
+- **`.claude/hooks/reinject_context.py`**: Auto-restores session state after context compaction. Reads git state + session-state.md.
+- **`.claude/state/session-state.template.md`**: Template for persistent session state that survives compaction and enables multi-window work.
+- **`.claude/settings.json`**: Plugin config + SessionStart hook for compaction recovery.
+
+#### New Commands
+- **`.claude/commands/gbu.md`**: Full 7-phase GBU review command — the two non-negotiable phases are Requirements Compliance and Fix Bad & Ugly.
+- **`.claude/commands/dev-cso.md`**: Chief Security Officer agent with OWASP Top 10 checklist, 5 security domains, audit output format.
+
+#### Project Management Structure
+- **`project_management/KB/`**: Knowledge Base with README, sync scripts (sync-kb.ps1), subdirectories (Project docs, Archive, External docs), and kb-urls.json.
+- **`project_management/STRATEGIC_BACKLOG.md`**: Long-term roadmap template with backlog items, decision queue, and archive.
+- **`project_management/README.md`**: Project management index.
+
+#### Infrastructure
+- **`.claude/launch.json`**: VS Code debug configurations for backend (uvicorn:8000) and frontend (npm:3000).
+- **`.claude/GUIDE.md`**: Complete operations guide — commands, skills, infrastructure, workflows, and tips.
+
+#### Interactive Guide
+- **`scaffold-guide.html`**: Interactive HTML dashboard with tabbed navigation, command search, workflow diagrams, Sprint-0 checklist, and role cards.
+
+### Changed
+
+#### Sprint TODO Template (3-Checkbox System)
+- **`sprint_XX_team_dev_MODULE_todo_TEMPLATE.md`**: Complete rewrite with 3-checkbox system (Done + Report for DEV, Tested + Report for QA, GBU + Report for CPTO). Includes team instructions, report naming conventions, and structured Definition of Done split by role.
+- **`sprint_00_team_dev_example_todo.md`**: Updated to demonstrate new template format.
+
+#### Design Review Command
+- **`design-review.md`**: Evolved from letter grades (A/B/C/D/F) to APPROVE/REVISE/REJECT verdicts. Output moved from `reports/` to `reviews/`. Added Quality Scorecard (8 dimensions), module reuse checks, and commit template.
+
+#### Naming Updates
+- `dev-ux.md`: "Nightingale (AGENTS)" → "Synaptix AGENTS"
+- `aria_ux.md`: "Nightingale (case management)" → "Synaptix AGENTS"
+- `start.ps1`: Comment updated from "Nightingale Agents" → "Synaptix AGENTS"
+
+### Removed
+- **`docs/KB/`**: Entire directory deleted — superseded by `project_management/KB/`
+- **`docs/sprints/sprint_00/todo/.gitkeep`**: Directory now has content files
+- **`scripts/.gitkeep`**: Directory now has audit_repo_structure.py
+
+---
+
 ## [0.4.0] - 2026-02-19
 
 ### Added
@@ -139,7 +197,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/SynaptixLabs/Windsurf-Projects-Template/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/SynaptixLabs/Windsurf-Projects-Template/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/SynaptixLabs/Windsurf-Projects-Template/compare/v0.4.0...v0.5.0
+[0.4.0]: https://github.com/SynaptixLabs/Windsurf-Projects-Template/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/SynaptixLabs/Windsurf-Projects-Template/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/SynaptixLabs/Windsurf-Projects-Template/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/SynaptixLabs/Windsurf-Projects-Template/releases/tag/v0.1.0

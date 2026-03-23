@@ -34,7 +34,7 @@ $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 # ============================================================================
 # CONFIGURATION — Edit this section per project
 # ============================================================================
-$ProjectName     = "{{PROJECT_NAME}}"          # e.g. "Nightingale Agents", "Papyrus"
+$ProjectName     = "{{PROJECT_NAME}}"          # e.g. "Synaptix AGENTS", "Papyrus"
 $BackendType     = "python"                     # "python" | "node"
 $BackendDir      = "backend"                    # Relative to repo root ("." for monolith)
 $BackendCmd      = "uvicorn app.main:app"       # Python: uvicorn entrypoint. Node: ignored (uses npm)

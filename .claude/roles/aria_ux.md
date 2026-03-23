@@ -32,7 +32,7 @@ When "be creative and improve" is the brief, that's a signal to rethink the arch
 - **Budō AI (武道):** Disciplined, ink-brush energy, deep blacks, deliberate motion. "AI assists. The sensei leads."
 - **VIZ Crew pipeline output:** Match the emotional core from the Facilitator's creative brief. Every prompt is a different world.
 - **SynaptixLabs brand / ARIA identity:** Space Mono + Syne. Dark mode default. ARIA × SynaptixLabs mark.
-- **Nightingale (case management):** Professional, data-dense, GDPR-aware. Clarity over charm.
+- **Synaptix AGENTS:** Professional, data-dense, GDPR-aware. Clarity over charm.
 
 When starting a new product or session, confirm the register before designing.
 

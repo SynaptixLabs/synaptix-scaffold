@@ -24,6 +24,8 @@ Run before any merge to main or "done" declaration.
 [ ] E2E smoke on critical paths pass
 [ ] TypeScript / Python type check: CLEAN
 [ ] Lint: CLEAN
+[ ] Layout/CSS uses percentage-based constraints (no fixed-pixel max-width as sole constraint)
+[ ] E2E layout tests verify at multiple viewport widths (1024, 1280, 1920)
 
 ### Security
 [ ] No hardcoded secrets (API keys, passwords, tokens)

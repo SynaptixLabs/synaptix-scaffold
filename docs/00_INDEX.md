@@ -73,12 +73,20 @@ docs/
 ├── knowledge/           # Domain knowledge, research, reference docs
 └── templates/
     ├── sprints/         # Copy-from templates for sprint artifacts
+    │   ├── sprint_XX_index_TEMPLATE.md
+    │   ├── sprint_XX_decisions_log_TEMPLATE.md
+    │   ├── sprint_XX_team_dev_MODULE_todo_TEMPLATE.md
+    │   ├── sprint_XX_team_dev_MODULE_report_TEMPLATE.md
+    │   ├── sprint_XX_team_playbook_TEMPLATE.md     # ← Agent Teams launch playbook
+    │   ├── sprint_XX_DR_TOPIC_TEMPLATE.md
+    │   └── sprint_XX_requirements_delta_TEMPLATE.md
+    ├── AGENT_TEAMS_LESSONS_TEMPLATE.md              # ← Cumulative lessons registry
+    ├── CPTO_agent_TEMPLATE.md
     ├── module_AGENTS_TEMPLATE.md
     ├── PRD_TEMPLATE.md
     ├── DECISIONS_TEMPLATE.md
     ├── CHANGELOG_TEMPLATE.md
-    ├── SECURITY_TEMPLATE.md
-    └── CPTO_agent_TEMPLATE.md
+    └── SECURITY_TEMPLATE.md
 ```
 
 ---
@@ -88,3 +96,27 @@ docs/
 - **One source of truth:** if two docs say different things → raise a FLAG and resolve.
 - **Keep docs runnable:** prefer concrete paths, commands, and acceptance criteria over prose.
 - **When adding capabilities:** update `03_MODULES.md` + the owning module's README/AGENTS.
+
+---
+
+## Agent Teams — Sprint Execution Process
+
+For projects using Claude Code Agent Teams to execute sprints:
+
+| Resource | Location | Purpose |
+|----------|----------|---------|
+| Sprint Team Launch Skill | `.claude/skills/sprint-team-launch.md` | Reusable skill loaded by team leads — covers creation, task board, coordination, shutdown |
+| Team Playbook Template | `docs/templates/sprints/sprint_XX_team_playbook_TEMPLATE.md` | Copy-paste TaskCreate prompts for FOUNDER to launch team |
+| Lessons Learned Template | `docs/templates/AGENT_TEAMS_LESSONS_TEMPLATE.md` | Cumulative registry — add findings after every sprint |
+
+**End-to-end process:**
+1. CPTO writes sprint spec + kickoff (tasks, acceptance criteria)
+2. CPTO writes team playbook (verbatim TaskCreate blocks per teammate)
+3. FOUNDER opens dedicated CLI, creates team, pastes TaskCreate blocks
+4. Team lead coordinates — unblocks dependencies, reviews deliverables
+5. FOUNDER intervenes only for auth/config/decisions that need human access
+6. Team lead produces sprint report, shuts down teammates
+7. CPTO runs GBU review on deliverables, logs lessons learned
+8. FOUNDER approves gate → next sub-sprint
+
+**Worked examples:** See `agents/project_management/sprints/sprint_11/todo/` for real playbooks (11a, 11b).

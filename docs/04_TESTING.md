@@ -176,3 +176,80 @@ await asyncio.create_subprocess_exec(*cmd)  # hangs forever if command hangs
 # ❌ WRONG: Buffering entire output
 output = await proc.stdout.read()  # OOM risk on large output
 ```
+
+---
+
+## E2E Testing Protocols (Cross-Project — Mandatory)
+
+> **Source:** Papyrus Sprint 10 DR — Wide/Narrow Layout Bug (P1, 5 failed rounds).
+> **Applies to:** All E2E tests across ALL SynaptixLabs projects.
+> **Why:** A P1 layout bug survived 4 fix rounds and passed all E2E tests at every round because tests validated at ONE viewport width while the bug existed at narrower widths.
+
+### Protocol 1: Diagnostic-First for Layout/CSS Bugs
+
+**BEFORE writing any CSS/layout fix**, measure actual dimensions:
+
+```
+Step 1: Navigate to the affected page on the user's dev server
+Step 2: Measure actual element dimensions:
+        document.querySelector('.target-element').offsetWidth
+        document.querySelector('.parent-container').offsetWidth
+        window.innerWidth
+Step 3: Compute the CSS math at the user's ACTUAL width
+        (substitute measured values into calc()/min()/max() expressions)
+Step 4: Take a screenshot for baseline comparison
+Step 5: ONLY THEN write the fix
+Step 6: Re-measure after fix to verify the output actually changed
+```
+
+**Why:** The single most impactful diagnostic action — measuring `el.offsetWidth` — was never done in the first 4 rounds. This single number would have immediately revealed why every fix failed.
+
+**Tools:** Use Playwright MCP `browser_evaluate` or ask the user to run JS in DevTools.
+
+### Protocol 2: Multi-Viewport E2E for Layout Tests
+
+Layout E2E tests MUST assert at multiple viewport widths. A test that passes at 1280px but fails at 1024px is a **false safety net**.
+
+**Minimum viewport matrix:**
+
+| Width | Represents |
+|-------|-----------|
+| 1024px | Small laptop / tablet landscape |
+| 1280px | Standard laptop (Playwright default) |
+| 1920px | Full HD desktop |
+
+**Core assertion for toggle/mode features:** Always assert a minimum pixel difference (e.g., `widthDifference >= 50`), not just "A > B" (which passes at 1px difference).
+
+### Protocol 3: No Fixed-Pixel Layout Constraints
+
+**Rule:** Never use fixed-pixel values as the sole constraint for responsive features.
+
+| BAD — breaks at narrow viewports | GOOD — works at any width |
+|---|---|
+| `max-width: 780px` | `width: min(780px, 75%)` |
+| `calc(50% - 390px)` | `width: 75%` |
+| `padding: max(48px, calc(50% - 390px))` | `width` + `mx-auto` |
+
+**Why:** `max-width: Xpx` has **zero effect** when the parent container is already ≤X pixels wide.
+
+### Protocol 4: Scripted E2E vs Interactive MCP Diagnostics
+
+| | Scripted E2E (Playwright) | Interactive MCP (`browser_*`) |
+|---|---|---|
+| **Purpose** | Repeatable regression suite | Ad-hoc diagnostic investigation |
+| **When** | CI pipeline, pre-merge gates | During bug investigation, before writing fix |
+| **Viewport** | Fixed (per config) | Match user's actual setup |
+| **What it catches** | Regressions from known-good state | Root cause of reported visual bugs |
+
+**Key insight:** Scripted E2E validates "does the code still work?" but NOT "does this fix solve the user's problem?" For the latter, use interactive MCP diagnostics against the user's live dev server.
+
+### Layout Bug Fix Checklist
+
+Before declaring any layout/CSS fix complete:
+
+- [ ] Measured actual element width on user's viewport (not just Playwright's default)
+- [ ] CSS math verified at 3+ viewport widths (1024, 1280, 1920)
+- [ ] Used percentage-based or `min()`/`max()` constraints (no fixed-pixel-only)
+- [ ] E2E asserts minimum pixel difference (not just "A > B")
+- [ ] User confirmed visual change on their machine
+- [ ] No secondary regressions (toolbar overlap, scroll issues, button interception)

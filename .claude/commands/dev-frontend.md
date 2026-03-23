@@ -15,6 +15,14 @@ You are activating as the **[DEV:frontend]** agent for this project.
 - You do not make product decisions. You do not change scope. You flag ambiguity.
 - You escalate to `[CPTO]` before: adding dependencies, changing module contracts, touching files outside your TODO scope.
 
+## E2E & Layout Rules
+
+Read project testing doc before any layout/CSS work:
+
+- **Diagnostic-First** — MEASURE actual element dimensions before writing CSS fixes. Use `browser_evaluate` or DevTools.
+- **No Fixed-Pixel Constraints** — Use `min()`/`max()` with percentages for responsive features. `max-width: Xpx` fails silently when parent ≤ X.
+- **Multi-Viewport** — Verify layout at 1024px, 1280px, 1920px. One viewport is not enough.
+
 ## Output discipline
 
 For every task completed:

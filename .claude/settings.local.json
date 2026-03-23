@@ -52,7 +52,18 @@
       "Bash(ls:*)",
       "Bash(cat:*)",
       "Bash(echo:*)",
-      "Bash(pwd:*)"
+      "Bash(pwd:*)",
+      "Bash(git init)",
+      "Bash(gh repo view shirdn/aicademy)",
+      "Bash(git push -u origin main)",
+      "Bash(kill %1)",
+      "Bash(pkill -f \"http.server 8766\")",
+      "Bash(git push)",
+      "Bash(chmod +x memory-game-demo/start.sh)",
+      "Bash(gh repo list AIcademy-by-NEAT --limit 20)",
+      "Bash(gh repo create AIcademy-by-NEAT/scaffold --public --description \"AIcademy project scaffold — copy this to start a new vibe coding project\")",
+      "Bash(gh repo create AIcademy-by-NEAT/memory-game-demo --public --description \"The Arcane Vault — D&D memory card game demo, built with the AIcademy scaffold\")",
+      "Bash(gh api repos/AIcademy-by-NEAT/scaffold --method PATCH --field is_template=true)"
     ],
     "deny": [
       "Bash(git push --force:*)",

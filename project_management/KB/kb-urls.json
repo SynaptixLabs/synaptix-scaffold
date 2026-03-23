@@ -1,0 +1,5 @@
+{
+  "_comment": "External URLs for KB sync. Set 'enabled' to true and add URLs to fetch.",
+  "enabled": false,
+  "urls": []
+}

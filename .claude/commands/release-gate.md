@@ -11,6 +11,8 @@ Run before any production deployment or public demo. Requires all items green.
 [ ] Type errors: NONE
 [ ] Lint: CLEAN
 [ ] Code coverage meets minimum threshold (80%+)
+[ ] Layout/CSS: no fixed-pixel max-width as sole responsive constraint
+[ ] E2E layout tests verified at 1024, 1280, 1920px viewports
 ```
 
 ### Security

@@ -38,11 +38,11 @@ echo    Sync KB.bat -Archive                      Archive obsolete
 echo    Sync KB.bat -DryRun                       Preview everything
 echo.
 echo  OUTPUT:
-echo    docs\KB\Project docs\    Local project files
-echo    docs\KB\External docs\   Web URL content
-echo    docs\KB\Archive\         Archived obsolete files
-echo    docs\KB\kb-index.json    Metadata index
-echo    docs\KB\kb-urls.json     Web URL registry (edit this!)
+echo    project_management\KB\Project docs\    Local project files
+echo    project_management\KB\External docs\   Web URL content
+echo    project_management\KB\Archive\         Archived obsolete files
+echo    project_management\KB\kb-index.json    Metadata index
+echo    project_management\KB\kb-urls.json     Web URL registry (edit this!)
 echo.
 echo  WEB SETUP (edit kb-urls.json to add URLs):
 echo    {
