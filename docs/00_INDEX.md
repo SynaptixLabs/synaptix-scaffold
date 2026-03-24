@@ -16,6 +16,33 @@ This folder is the **source of truth** for how the project is specified, built, 
 | [Deployment](05_DEPLOYMENT.md) | CI/CD + releases + rollback | `[CTO]` |
 | [Decisions](0l_DECISIONS.md) | Project decision log | `[CTO]` / `[CPO]` |
 | [UI Kit](ui/UI_KIT.md) | Design tokens, components, accessibility | `[DESIGNER]` / `[DEV:*|FE]` |
+| [KB Sync](KB/) | Knowledge base for Claude Projects — sync, consolidate, export | `[CPTO]` |
+
+---
+
+## Knowledge Base (KB)
+
+The `KB/` directory builds a curated knowledge base for Claude Projects:
+
+```
+docs/KB/
+  sync-kb.ps1         # Main sync script (PowerShell)
+  Sync KB.bat          # Double-click launcher
+  Sync KB - Help.bat   # Quick reference
+  kb-urls.json         # Web URL registry
+  Project docs/        # Synced local .md files (flat-named)
+  External docs/       # Fetched web content
+  Consolidated/        # Merged output (after -Consolidate)
+  Archive/             # Archived obsolete files
+  kb-index.json        # Generated metadata index
+```
+
+**Quick commands:**
+- `.\sync-kb.ps1` — show help
+- `.\sync-kb.ps1 -Status` — file counts
+- `.\sync-kb.ps1 -Source all` — sync everything
+- `.\sync-kb.ps1 -Consolidate 10` — merge to 10 files
+- `.\sync-kb.ps1 -Reset` — wipe all (with confirmation)
 
 ---
 

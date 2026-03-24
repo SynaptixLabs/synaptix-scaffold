@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-03-24
+
+### Added
+
+#### KB Sync System (`docs/KB/`)
+- **`sync-kb.ps1`**: v3 KB sync script for Claude Projects — collects local .md/.pdf/.txt files + web URLs into indexed output folders. Features:
+  - **Bare run = help**: Running with no args shows full command reference
+  - **`-Status`**: Quick file counts across all KB folders with extension breakdown
+  - **`-Consolidate N`**: Merge files down to a target count (e.g., 95 files -> 10). Groups by tier/folder/prefix, concatenates with headers. Can only shrink, never grow
+  - **`-Reset`**: Wipe KB folders with "type yes to confirm" safety prompt. `-ResetTarget` for selective wipe (project/external/archive/consolidated). `-Force` to skip prompt
+  - **`-Source all`**: Full sync from project files
+  - **`-Report`**: Find obsolete + stale files
+  - **`-Stats`**: Full stats from kb-index.json
+  - Tier system (1-3), web URL fetching, archive management, dry-run mode
+- **`Sync KB.bat`**: Double-click launcher for Windows
+- **`Sync KB - Help.bat`**: Quick reference card
+- **`kb-urls.json`**: Template for web URL registry
+- **`docs/00_INDEX.md`**: Updated with KB section and quick commands
+
 ## [0.5.0] - 2026-03-23
 
 ### Added
